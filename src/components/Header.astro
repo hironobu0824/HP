@@ -1,0 +1,29 @@
+---
+import { SITE_NAME } from "../data/links";
+
+const navItems = [
+  { label: "PROFILE", href: "/#profile" },
+  { label: "SCHEDULE", href: "/#schedule" },
+  { label: "YOUTUBE", href: "/#youtube" },
+  { label: "LINKS", href: "/#links" },
+];
+---
+
+<header class="sticky top-0 z-10 border-b border-line bg-page">
+  <div class="mx-auto flex max-w-5xl flex-col gap-2 px-4 py-3 md:flex-row md:items-center md:justify-between md:gap-4 md:py-4 md:px-8">
+    <a href="/" class="text-lg font-bold no-underline">{SITE_NAME}のホームページ</a>
+    <nav aria-label="メインメニュー">
+      <ul class="flex items-center gap-4 text-xs whitespace-nowrap font-semibold tracking-wider md:gap-8 md:text-sm">
+        {
+          navItems.map((item) => (
+            <li>
+              <a href={item.href} class="no-underline hover:text-accent hover:underline">
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </div>
+</header>

@@ -1,0 +1,18 @@
+---
+import { CONTACT_EMAIL, SITE_NAME_EN } from "../data/links";
+
+const year = new Date().getFullYear();
+---
+
+<footer class="mt-16 border-t border-line">
+  <div
+    class="mx-auto flex max-w-5xl flex-col gap-3 px-4 py-8 text-sm text-muted md:flex-row md:items-center md:justify-between md:px-8"
+  >
+    <p>
+      <a href={`mailto:${CONTACT_EMAIL}`} class="underline hover:text-accent">メール</a>
+      <span class="mx-2" aria-hidden="true">/</span>
+      <a href="/schedule/poster" class="underline hover:text-accent">告知画像を作る</a>
+    </p>
+    <p>&copy; {year} {SITE_NAME_EN}</p>
+  </div>
+</footer>

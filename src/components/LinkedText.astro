@@ -1,0 +1,21 @@
+---
+import { splitLinks } from "../lib/description";
+
+type Props = {
+  text: string;
+};
+
+const parts = splitLinks(Astro.props.text);
+---
+
+{
+  parts.map((part) =>
+    part.type === "link" ? (
+      <a href={part.value} target="_blank" rel="noopener noreferrer" class="text-accent underline">
+        {part.value}
+      </a>
+    ) : (
+      part.value
+    ),
+  )
+}

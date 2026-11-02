@@ -1,0 +1,15 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "christopher-official",
+  "main": "@astrojs/cloudflare/entrypoints/server",
+  "compatibility_date": "2026-10-01",
+  "observability": {
+    "enabled": true
+  },
+  // id を書かなければ、初回デプロイ時に自動で作成される
+  "kv_namespaces": [
+    {
+      "binding": "SCHEDULE_CACHE"
+    }
+  ]
+}

@@ -1,0 +1,125 @@
+---
+import { Image } from "astro:assets";
+import { getEntry } from "astro:content";
+import photo from "../assets/christopher.webp";
+import ProfileTable from "../components/ProfileTable.astro";
+import ScheduleList from "../components/ScheduleList.astro";
+import SectionHeading from "../components/SectionHeading.astro";
+import SocialLink from "../components/SocialLink.astro";
+import {
+  comboLinks,
+  CONTACT_EMAIL,
+  memberLinks,
+  SITE_NAME,
+  SITE_NAME_EN,
+  YOUTUBE_UPLOADS_PLAYLIST,
+} from "../data/links";
+import Layout from "../layouts/Layout.astro";
+import { loadSchedule } from "../lib/schedule";
+
+export const prerender = false;
+
+const [upcoming, past, profile] = await Promise.all([
+  loadSchedule("upcoming"),
+  loadSchedule("past"),
+  getEntry("profile", "index"),
+]);
+if (!profile) throw new Error("src/content/profile/index.md がありません");
+---
+
+<Layout>
+  <section class="mx-auto md:max-w-lg md:pt-12">
+    <div class="relative overflow-hidden md:rounded-sm">
+      <Image
+        src={photo}
+        alt="クリストファーの齊藤木曜日（左）と高橋（右）"
+        class="h-auto w-full"
+        loading="eager"
+        fetchpriority="high"
+      />
+      <div class="absolute inset-0 bg-linear-to-t from-black/70 via-transparent via-40%"></div>
+      <h1 class="absolute bottom-3 left-4 flex flex-col gap-1 text-white md:bottom-4 md:left-5">
+        <span class="text-3xl font-bold md:text-5xl">{SITE_NAME}</span>
+        <span class="text-xs font-semibold tracking-[0.3em] md:text-sm">{SITE_NAME_EN}</span>
+      </h1>
+    </div>
+  </section>
+
+  <div class="mx-auto max-w-5xl px-4 md:px-8">
+    <section id="profile" class="mt-16 scroll-mt-24 md:mt-24">
+      <SectionHeading en="PROFILE" ja="プロフィール" />
+      <ProfileTable items={profile.data.items} />
+      <div class="mt-10 grid gap-10 md:grid-cols-2 md:gap-12">
+        {
+          profile.data.members.map((member) => (
+            <section>
+              <h3 class="text-2xl font-bold">
+                {member.name}
+                <span class="ml-2 text-sm font-medium text-muted">（{member.position}）</span>
+              </h3>
+              <ProfileTable items={member.items} />
+            </section>
+          ))
+        }
+      </div>
+    </section>
+
+    <section id="schedule" class="mt-16 scroll-mt-24 md:mt-24">
+      <SectionHeading en="SCHEDULE" ja="ライブ出演情報" />
+      <ScheduleList result={upcoming} emptyMessage="現在予定はありません" />
+
+      <details class="mt-8">
+        <summary class="cursor-pointer font-semibold text-accent">過去のライブ</summary>
+        <ScheduleList result={past} emptyMessage="過去のライブはありません" showTicket={false} />
+      </details>
+    </section>
+
+    <section id="youtube" class="mt-16 scroll-mt-24 md:mt-24">
+      <SectionHeading en="YOUTUBE" ja="動画" />
+      <div class="mt-6 aspect-video overflow-hidden rounded-sm bg-black">
+        <iframe
+          src={`https://www.youtube-nocookie.com/embed/videoseries?list=${YOUTUBE_UPLOADS_PLAYLIST}`}
+          title={`${SITE_NAME}の YouTube 動画`}
+          class="h-full w-full"
+          loading="lazy"
+          referrerpolicy="strict-origin-when-cross-origin"
+          allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen></iframe>
+      </div>
+    </section>
+
+    <section id="links" class="mt-16 scroll-mt-24 md:mt-24">
+      <SectionHeading en="LINKS" ja="各種リンク、お問い合わせ" />
+      <ul class="mt-6 flex flex-wrap gap-3">
+        {
+          comboLinks.map((link) => (
+            <li>
+              <SocialLink link={link} />
+            </li>
+          ))
+        }
+      </ul>
+      <div class="mt-6 grid gap-6 md:grid-cols-2">
+        {
+          memberLinks.map((member) => (
+            <section>
+              <h3 class="font-bold">{member.name}</h3>
+              <ul class="mt-2 flex flex-wrap gap-3">
+                {member.links.map((link) => (
+                  <li>
+                    <SocialLink link={link} />
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))
+        }
+      </div>
+      <p class="mt-6 text-sm">
+        出演依頼などのお問い合わせは、上記の X の DM または
+        <a href={`mailto:${CONTACT_EMAIL}`} class="text-accent underline">{CONTACT_EMAIL}</a>
+        までご連絡ください。
+      </p>
+    </section>
+  </div>
+</Layout>

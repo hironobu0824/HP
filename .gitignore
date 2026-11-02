@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.astro/
+.wrangler/
+.dev.vars
+.DS_Store
+worker-configuration.d.ts
+src/assets/markup_*

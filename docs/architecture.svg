@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 570" role="img" aria-label="システム構成図">
+<style>
+:root { --bg:#ffffff; --card:#f6f8fa; --border:#d0d7de; --ink:#1f2328; --muted:#59636e; --line:#6e7781; --cf:#fff5eb; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#0d1117; --card:#161b22; --border:#30363d; --ink:#e6edf3; --muted:#9198a1; --line:#8b949e; --cf:#26190d; }
+}
+text { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Sans","Noto Sans CJK JP","Yu Gothic",sans-serif; }
+.bg { fill:var(--bg); }
+.card, .inner { fill:var(--card); stroke:var(--border); stroke-width:1.5; }
+.inner { fill:var(--bg); }
+.cf { fill:var(--cf); stroke:#f38020; stroke-width:2; }
+.title { fill:var(--ink); font-size:16px; font-weight:700; }
+.small { font-size:15px; }
+.sub { fill:var(--muted); font-size:12.5px; }
+.label { fill:var(--muted); font-size:12.5px; font-weight:600; }
+.line { fill:none; stroke:var(--line); stroke-width:2; }
+.dashed { stroke-dasharray:6 5; }
+.head { fill:var(--line); }
+.ink { fill:var(--ink); }
+</style>
+<defs><marker id="head" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head" d="M0 0L10 5L0 10z"/></marker></defs>
+<rect class="bg" width="1000" height="570" rx="16"/>
+<rect class="card" x="40" y="30" width="170" height="76" rx="12"/><path transform="translate(58 54) scale(1.1666666666666667)" d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z" class="ink"/><text class="title" x="102" y="65.0">X</text><text class="sub" x="102" y="85.0">告知の発信</text>
+<rect class="card" x="790" y="30" width="170" height="76" rx="12"/><g class="ink" transform="translate(806 54)"><circle cx="14" cy="8" r="6"/><path d="M2 28c0-7 5-11 12-11s12 4 12 11z"/></g><text class="title" x="852" y="74.0">更新担当者</text>
+<rect class="card" x="40" y="240" width="170" height="76" rx="12"/><g class="ink" transform="translate(56 264)"><circle cx="14" cy="8" r="6"/><path d="M2 28c0-7 5-11 12-11s12 4 12 11z"/></g><text class="title" x="102" y="275.0">閲覧者</text><text class="sub" x="102" y="295.0">ブラウザ</text>
+<rect class="cf" x="300" y="170" width="400" height="240" rx="14"/>
+<path transform="translate(322 184) scale(1.4166666666666667)" d="M16.5088 16.8447c.1475-.5068.0908-.9707-.1553-1.3154-.2246-.3164-.6045-.499-1.0615-.5205l-8.6592-.1123a.1559.1559 0 0 1-.1333-.0713c-.0283-.042-.0351-.0986-.021-.1553.0278-.084.1123-.1484.2036-.1562l8.7359-.1123c1.0351-.0489 2.1601-.8868 2.5537-1.9136l.499-1.3013c.0215-.0561.0293-.1128.0147-.168-.5625-2.5463-2.835-4.4453-5.5499-4.4453-2.5039 0-4.6284 1.6177-5.3876 3.8614-.4927-.3658-1.1187-.5625-1.794-.499-1.2026.119-2.1665 1.083-2.2861 2.2856-.0283.31-.0069.6128.0635.894C1.5683 13.171 0 14.7754 0 16.752c0 .1748.0142.3515.0352.5273.0141.083.0844.1475.1689.1475h15.9814c.0909 0 .1758-.0645.2032-.1553l.12-.4268zm2.7568-5.5634c-.0771 0-.1611 0-.2383.0112-.0566 0-.1054.0415-.127.0976l-.3378 1.1744c-.1475.5068-.0918.9707.1543 1.3164.2256.3164.6055.498 1.0625.5195l1.8437.1133c.0557 0 .1055.0263.1329.0703.0283.043.0351.1074.0214.1562-.0283.084-.1132.1485-.204.1553l-1.921.1123c-1.041.0488-2.1582.8867-2.5527 1.914l-.1406.3585c-.0283.0713.0215.1416.0986.1416h6.5977c.0771 0 .1474-.0489.169-.126.1122-.4082.1757-.837.1757-1.2803 0-2.6025-2.125-4.727-4.7344-4.727" fill="#F38020"/>
+<text class="title" x="366" y="207">Cloudflare Workers</text>
+<rect class="inner" x="320" y="232" width="170" height="70" rx="10"/><text class="title small" x="405.0" y="264.0" text-anchor="middle">静的ファイル</text><text class="sub" x="405.0" y="283.0" text-anchor="middle">404, 画像</text>
+<rect class="inner" x="510" y="232" width="170" height="70" rx="10"/><text class="title small" x="595.0" y="264.0" text-anchor="middle">サーバー描画</text><text class="sub" x="595.0" y="283.0" text-anchor="middle">トップページ</text>
+<rect class="inner" x="510" y="346" width="170" height="52" rx="10"/><text class="title small" x="595.0" y="369.0" text-anchor="middle">キャッシュ</text><text class="sub" x="595.0" y="388.0" text-anchor="middle">10 分</text>
+<rect class="card" x="790" y="228" width="170" height="86" rx="12"/><path transform="translate(806 256) scale(1.25)" d="M18.316 5.684H24v12.632h-5.684V5.684zM5.684 24h12.632v-5.684H5.684V24zM18.316 5.684V0H1.895A1.894 1.894 0 0 0 0 1.895v16.421h5.684V5.684h12.632zm-7.207 6.25v-.065c.272-.144.5-.349.687-.617s.279-.595.279-.982c0-.379-.099-.72-.3-1.025a2.05 2.05 0 0 0-.832-.714 2.703 2.703 0 0 0-1.197-.257c-.6 0-1.094.156-1.481.467-.386.311-.65.671-.793 1.078l1.085.452c.086-.249.224-.461.413-.633.189-.172.445-.257.767-.257.33 0 .602.088.816.264a.86.86 0 0 1 .322.703c0 .33-.12.589-.36.778-.24.19-.535.284-.886.284h-.567v1.085h.633c.407 0 .748.109 1.02.327.272.218.407.499.407.843 0 .336-.129.614-.387.832s-.565.327-.924.327c-.351 0-.651-.103-.897-.311-.248-.208-.422-.502-.521-.881l-1.096.452c.178.616.505 1.082.977 1.401.472.319.984.478 1.538.477a2.84 2.84 0 0 0 1.293-.291c.382-.193.684-.458.902-.794.218-.336.327-.72.327-1.149 0-.429-.115-.797-.344-1.105a2.067 2.067 0 0 0-.881-.689zm2.093-1.931l.602.913L15 10.045v5.744h1.187V8.446h-.827l-2.158 1.557zM22.105 0h-3.289v5.184H24V1.895A1.894 1.894 0 0 0 22.105 0zm-3.289 23.5l4.684-4.684h-4.684V23.5zM0 22.105C0 23.152.848 24 1.895 24h3.289v-5.184H0v3.289z" fill="#4285F4"/><text class="title" x="852" y="268.0">Google</text><text class="sub" x="852" y="288.0">カレンダー API</text>
+<rect class="card" x="40" y="470" width="170" height="76" rx="12"/><g class="ink" transform="translate(56 494)"><circle cx="14" cy="8" r="6"/><path d="M2 28c0-7 5-11 12-11s12 4 12 11z"/></g><text class="title" x="102" y="514.0">開発者</text>
+<rect class="card" x="415" y="470" width="170" height="76" rx="12"/><path transform="translate(431 494) scale(1.25)" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" class="ink"/><text class="title" x="477" y="505.0">GitHub</text><text class="sub" x="477" y="525.0">コード / 画像</text>
+<path class="line" d="M790 68H214" marker-end="url(#head)"/>
+<text class="label" x="500" y="58" text-anchor="middle">告知を投稿</text>
+<path class="line" d="M875 106V224" marker-end="url(#head)"/>
+<text class="label" x="885" y="170" text-anchor="start">ライブ情報を登録</text>
+<path class="line dashed" d="M125 240V110" marker-end="url(#head)"/>
+<text class="label" x="135" y="180" text-anchor="start">リンクで移動</text>
+<path class="line" d="M210 278H296" marker-end="url(#head)"/>
+<text class="label" x="253" y="268" text-anchor="middle">閲覧</text>
+<path class="line" d="M680 267H786" marker-end="url(#head)"/>
+<text class="label" x="745" y="257" text-anchor="middle">予定を取得</text>
+<text class="label" x="745" y="286" text-anchor="middle">API キー</text>
+<path class="line" d="M595 304V344" marker-end="url(#head)" marker-start="url(#head)"/>
+<path class="line" d="M210 508H411" marker-end="url(#head)"/>
+<text class="label" x="310" y="498" text-anchor="middle">push</text>
+<path class="line" d="M500 470V414" marker-end="url(#head)"/>
+<text class="label" x="510" y="448" text-anchor="start">自動ビルド / デプロイ</text>
+</svg>

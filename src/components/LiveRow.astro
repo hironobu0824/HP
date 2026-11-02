@@ -1,0 +1,90 @@
+---
+import type { LiveEvent } from "../lib/calendar";
+import { formatDate, toTimestamp } from "../lib/date";
+import { splitForPreview } from "../lib/description";
+import LinkedText from "./LinkedText.astro";
+
+type Props = {
+  event: LiveEvent;
+  showTicket?: boolean;
+};
+
+const { event, showTicket = true } = Astro.props;
+const description = event.description ? splitForPreview(event.description) : null;
+---
+
+<li class="grid gap-3 border-b border-line py-6 md:grid-cols-[10rem_1fr_auto] md:gap-6">
+  <time
+    datetime={new Date(toTimestamp(event.start)).toISOString()}
+    class="text-xl font-bold md:text-2xl"
+  >
+    {formatDate(event.start)}
+  </time>
+  <div class="min-w-0">
+    <h3 class="text-lg font-bold md:text-xl">{event.title}</h3>
+    <dl class="mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm text-muted">
+      {
+        event.venue && (
+          <>
+            <dt>場所</dt>
+            <dd>{event.venue}</dd>
+          </>
+        )
+      }
+      <dt>時間</dt>
+      <dd>
+        {[
+          event.doorsAt && `開場 ${event.doorsAt}`,
+          event.openAt && `開演 ${event.openAt}`,
+          event.closesAt && `終演 ${event.closesAt}`,
+        ]
+          .filter(Boolean)
+          .join(" / ") || "時間未定"}
+      </dd>
+      {
+        event.price && (
+          <>
+            <dt>料金</dt>
+            <dd>{event.price}</dd>
+          </>
+        )
+      }
+    </dl>
+    {
+      description &&
+        (description.rest ? (
+          <details class="group mt-3 text-sm whitespace-pre-line">
+            <summary class="cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+              <LinkedText text={description.preview} />
+              <span class="group-open:hidden">…</span>
+              <span class="ml-1 font-semibold text-accent underline group-open:hidden">続きを読む</span>
+            </summary>
+            <LinkedText text={description.rest} />
+            <button
+              type="button"
+              onclick="this.closest('details').open = false"
+              class="mt-2 block cursor-pointer font-semibold text-accent underline"
+            >
+              閉じる
+            </button>
+          </details>
+        ) : (
+          <p class="mt-3 text-sm whitespace-pre-line">
+            <LinkedText text={description.preview} />
+          </p>
+        ))
+    }
+  </div>
+  {
+    showTicket && event.ticketUrl && (
+      <a
+        href={event.ticketUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="self-start justify-self-start rounded-sm bg-accent px-5 py-2.5 text-sm font-bold text-white no-underline transition-opacity hover:opacity-85 motion-reduce:transition-none"
+      >
+        チケットを購入
+      </a>
+    )
+  }
+</li>

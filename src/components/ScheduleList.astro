@@ -1,0 +1,52 @@
+---
+import type { ScheduleResult } from "../lib/calendar";
+import { xLinks } from "../data/links";
+import LiveRow from "./LiveRow.astro";
+
+type Props = {
+  result: ScheduleResult;
+  limit?: number;
+  emptyMessage: string;
+  showTicket?: boolean;
+};
+
+const { result, limit, emptyMessage, showTicket } = Astro.props;
+const events = result.status === "ok" ? result.events.slice(0, limit) : [];
+---
+
+{
+  result.status === "error" ? (
+    <p class="mt-8 rounded-sm border border-line bg-surface p-6 text-sm">
+      ライブ情報を取得できませんでした。最新の情報は
+      {
+        xLinks.map((link, index) => (
+          <>
+            {index > 0 && "、"}
+            <a
+              href={link.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-accent underline"
+            >
+              {link.name}の X
+            </a>
+          </>
+        ))
+      }
+      をご覧ください。
+    </p>
+  ) : (
+    <>
+      {result.stale && <p class="mt-6 text-sm text-muted">最新でない可能性があります。</p>}
+      {events.length === 0 ? (
+        <p class="mt-8 text-sm text-muted">{emptyMessage}</p>
+      ) : (
+        <ul class="mt-4 border-t border-line">
+          {events.map((event) => (
+            <LiveRow event={event} showTicket={showTicket} />
+          ))}
+        </ul>
+      )}
+    </>
+  )
+}

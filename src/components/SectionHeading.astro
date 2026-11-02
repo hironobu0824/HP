@@ -1,0 +1,14 @@
+---
+type Props = {
+  en: string;
+  ja: string;
+  as?: "h1" | "h2";
+};
+
+const { en, ja, as: Tag = "h2" } = Astro.props;
+---
+
+<Tag class="flex flex-col gap-1">
+  <span class="text-4xl font-bold tracking-wide md:text-6xl">{en}</span>
+  <span class="text-sm font-medium text-muted">{ja}</span>
+</Tag>
