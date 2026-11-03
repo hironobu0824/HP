@@ -8,11 +8,50 @@ const year = new Date().getFullYear();
   <div
     class="mx-auto flex max-w-5xl flex-col gap-3 px-4 py-8 text-sm text-muted md:flex-row md:items-center md:justify-between md:px-8"
   >
-    <p>
-      <a href={`mailto:${CONTACT_EMAIL}`} class="underline hover:text-accent">メール</a>
-      <span class="mx-2" aria-hidden="true">/</span>
-      <a href="/schedule/poster" class="underline hover:text-accent">告知画像を作る</a>
-    </p>
+    <div>
+      <p>
+        <a href={`mailto:${CONTACT_EMAIL}`} class="underline hover:text-accent">メール</a>
+        <span class="mx-2" aria-hidden="true">/</span>
+        <a href="/schedule/poster" class="underline hover:text-accent">告知画像を作る</a>
+        <span class="mx-2" aria-hidden="true">/</span>
+        <button
+          type="button"
+          data-clear-schedule
+          class="cursor-pointer underline hover:text-accent disabled:cursor-wait disabled:opacity-60"
+        >
+          ライブ情報を更新
+        </button>
+      </p>
+      <p data-clear-schedule-status class="mt-1 text-xs" aria-live="polite"></p>
+    </div>
     <p>&copy; {year} {SITE_NAME_EN}</p>
   </div>
 </footer>
+
+<script>
+  const button = document.querySelector<HTMLButtonElement>("[data-clear-schedule]");
+  const status = document.querySelector<HTMLElement>("[data-clear-schedule-status]");
+
+  // カレンダーの変更をすぐ反映したいときに、日程のキャッシュを消して読み込み直す
+  button?.addEventListener("click", async () => {
+    if (!status) return;
+    button.disabled = true;
+    status.textContent = "更新しています…";
+    try {
+      const response = await fetch("/api/schedule-cache", { method: "DELETE" });
+      if (response.ok) {
+        location.reload();
+        return;
+      }
+      if (response.status === 429) {
+        const { retryAfterSeconds } = (await response.json()) as { retryAfterSeconds: number };
+        status.textContent = `少し前に更新されたばかりです。${Math.ceil(retryAfterSeconds / 60)}分ほど待ってからお試しください。`;
+      } else {
+        status.textContent = "更新できませんでした。時間をおいてお試しください。";
+      }
+    } catch {
+      status.textContent = "更新できませんでした。時間をおいてお試しください。";
+    }
+    button.disabled = false;
+  });
+</script>

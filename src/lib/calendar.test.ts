@@ -1,5 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { getSchedule, toLiveEvent, type ScheduleCache, type ScheduleDeps } from "./calendar";
+import {
+  clearSchedule,
+  getSchedule,
+  toLiveEvent,
+  type ScheduleCache,
+  type ScheduleDeps,
+} from "./calendar";
 
 const NOW = new Date("2026-11-02T03:00:00.000Z");
 
@@ -225,5 +231,28 @@ describe("getSchedule", () => {
       .mockResolvedValueOnce(Response.json({ items: [googleEvent({ id: "b" })] }));
     const result = await getSchedule("upcoming", deps({ fetch: fetchMock }));
     expect(result.status === "ok" && result.events).toHaveLength(2);
+  });
+});
+
+describe("clearSchedule", () => {
+  it("消去したあとは 10 分以内でも取得し直す", async () => {
+    const d = deps();
+    await getSchedule("upcoming", d);
+    const later = new Date(NOW.getTime() + 60 * 1000);
+    expect(await clearSchedule({ ...d, now: later })).toEqual({ status: "cleared" });
+    await getSchedule("upcoming", { ...d, now: later });
+    expect(d.fetch).toHaveBeenCalledTimes(2);
+  });
+
+  it("5 分以内は続けて消去できない", async () => {
+    const d = deps();
+    await clearSchedule(d);
+    expect(await clearSchedule({ ...d, now: new Date(NOW.getTime() + 4 * 60 * 1000) })).toEqual({
+      status: "too-soon",
+      retryAfterSeconds: 60,
+    });
+    expect(await clearSchedule({ ...d, now: new Date(NOW.getTime() + 5 * 60 * 1000) })).toEqual({
+      status: "cleared",
+    });
   });
 });

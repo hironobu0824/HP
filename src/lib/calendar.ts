@@ -50,6 +50,8 @@ type GoogleEvent = {
 };
 
 const FRESH_MS = 10 * 60 * 1000;
+const CLEARED_AT_KEY = "schedule:cleared-at";
+const CLEAR_INTERVAL_MS = 5 * 60 * 1000;
 const CACHE_TTL_SECONDS = 7 * 24 * 60 * 60;
 const MAX_PAGES = 4;
 const REQUEST_TIMEOUT_MS = 5000;
@@ -158,12 +160,40 @@ async function readCache(key: string, cache: ScheduleCache): Promise<CacheEntry 
   }
 }
 
+// 消去ボタンを押した時刻。これより前に取得したキャッシュは使わない
+async function readClearedAt(cache: ScheduleCache): Promise<number> {
+  try {
+    const value = await cache.get(CLEARED_AT_KEY);
+    return value ? toTimestamp(value) : 0;
+  } catch (error) {
+    console.error("Failed to read the schedule cache", error);
+    return 0;
+  }
+}
+
+export type ClearResult = { status: "cleared" } | { status: "too-soon"; retryAfterSeconds: number };
+
+// 誰でも押せるため、Google API と KV の無料枠を使い切られないよう、サイト全体で間隔を空ける
+export async function clearSchedule(deps: Pick<ScheduleDeps, "cache" | "now">): Promise<ClearResult> {
+  const elapsed = deps.now.getTime() - (await readClearedAt(deps.cache));
+  if (elapsed < CLEAR_INTERVAL_MS) {
+    return { status: "too-soon", retryAfterSeconds: Math.ceil((CLEAR_INTERVAL_MS - elapsed) / 1000) };
+  }
+  await deps.cache.put(CLEARED_AT_KEY, deps.now.toISOString(), {
+    expirationTtl: CACHE_TTL_SECONDS,
+  });
+  return { status: "cleared" };
+}
+
 export async function getSchedule(
   range: ScheduleRange,
   deps: ScheduleDeps,
 ): Promise<ScheduleResult> {
   const key = cacheKey(range);
-  const cached = await readCache(key, deps.cache);
+  const [cached, clearedAt] = await Promise.all([
+    readCache(key, deps.cache),
+    readClearedAt(deps.cache),
+  ]);
   const toResult = (entry: CacheEntry, stale: boolean): ScheduleResult => ({
     status: "ok",
     events: selectEvents(entry.events, range, deps.now),
@@ -171,7 +201,8 @@ export async function getSchedule(
     stale,
   });
 
-  if (cached && deps.now.getTime() - toTimestamp(cached.fetchedAt) < FRESH_MS) {
+  const fetchedAt = cached ? toTimestamp(cached.fetchedAt) : 0;
+  if (cached && fetchedAt >= clearedAt && deps.now.getTime() - fetchedAt < FRESH_MS) {
     return toResult(cached, false);
   }
 
