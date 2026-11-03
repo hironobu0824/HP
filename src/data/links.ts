@@ -19,7 +19,7 @@ export const comboLinks: SocialLinkItem[] = [
   {
     service: "youtube",
     name: SITE_NAME,
-    detail: "YouTube",
+    detail: "クリストファー公式",
     href: "https://youtube.com/channel/UCm3o-x-KILHHeNEsn5O8W2Q",
   },
 ];
@@ -60,7 +60,7 @@ export const memberLinks: { name: string; links: SocialLinkItem[] }[] = [
       {
         service: "youtube",
         name: "高橋",
-        detail: "大喜利 YouTube",
+        detail: "大喜利特訓中【クリストファー 髙橋】",
         href: "https://youtube.com/channel/UCALJ_RFCr1qehgtUB057Cyw",
       },
     ],

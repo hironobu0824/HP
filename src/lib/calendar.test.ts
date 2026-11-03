@@ -52,6 +52,13 @@ describe("toLiveEvent", () => {
     expect(toLiveEvent(googleEvent({ visibility }))).toBeNull();
   });
 
+  it("カレンダーの場所が空なら説明欄の会場を使う", () => {
+    expect(
+      toLiveEvent(googleEvent({ location: undefined, description: "会場: 下北沢某劇場" }))?.venue,
+    ).toBe("下北沢某劇場");
+    expect(toLiveEvent(googleEvent({ description: "会場: 新宿某劇場" }))?.venue).toBe("下北沢");
+  });
+
   it("Google マップの場所は名前だけにする", () => {
     expect(
       toLiveEvent(googleEvent({ location: "下北ZAWAZAWA, 日本、〒155-0031 東京都世田谷区" }))?.venue,

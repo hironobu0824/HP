@@ -70,19 +70,21 @@ export function toLiveEvent(item: GoogleEvent): LiveEvent | null {
   const end = item.end?.dateTime ?? item.end?.date;
   if (!item.id || !title || !start || !end) return null;
 
+  const parsed = parseDescription(item.description);
   return {
     id: item.id,
     title,
     allDay: !item.start?.dateTime,
     start,
     end,
-    venue: toVenue(item.location),
-    ...parseDescription(item.description),
+    ...parsed,
+    // カレンダーの場所が空のときは、説明欄の「会場:」の行を使う
+    venue: toVenue(item.location) ?? parsed.venue,
   };
 }
 
 function cacheKey(range: ScheduleRange): string {
-  return typeof range === "string" ? `schedule:v5:${range}` : `schedule:v5:month:${range.month}`;
+  return typeof range === "string" ? `schedule:v6:${range}` : `schedule:v6:month:${range.month}`;
 }
 
 function timeWindow(range: ScheduleRange, now: Date): { timeMin: string; timeMax?: string } {

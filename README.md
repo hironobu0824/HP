@@ -86,6 +86,17 @@ npx wrangler secret put GOOGLE_CALENDAR_ID
 SITE_URL=https://example.com npm run deploy
 ```
 
+### 自動デプロイ
+
+`main` へ push（マージ）すると、GitHub Actions がチェックのあとに本番へデプロイします。
+リポジトリの Settings に次を登録しておきます。
+
+| 種類 | 名前 | 内容 |
+| --- | --- | --- |
+| Secret | `CLOUDFLARE_API_TOKEN` | Cloudflare の API トークン（「Edit Cloudflare Workers」テンプレート） |
+| Secret | `CLOUDFLARE_ACCOUNT_ID` | Cloudflare のアカウント ID |
+| Variable | `SITE_URL` | 公開 URL |
+
 ## 📖 ドキュメント
 
 - [設計書](docs/design.md)

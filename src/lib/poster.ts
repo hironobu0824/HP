@@ -75,11 +75,7 @@ export function detailTexts(event: LiveEvent): string[] {
     ]
       .filter(Boolean)
       .join(" / ") || "時間未定";
-  return [
-    event.venue && `場所: ${event.venue}`,
-    time,
-    event.price && `料金: ${event.price}`,
-  ].filter((text): text is string => Boolean(text));
+  return [`場所: ${event.venue || "未定"}`, time, `料金: ${event.price || "未定"}`];
 }
 
 function toRow(event: LiveEvent, measure: MeasureText): PosterRow {

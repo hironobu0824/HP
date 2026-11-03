@@ -1,4 +1,5 @@
 export type ParsedDescription = {
+  venue: string | null;
   doorsAt: string | null;
   openAt: string | null;
   closesAt: string | null;
@@ -127,6 +128,7 @@ function cleanUpRemainder(text: string): string {
 
 export function parseDescription(raw: string | undefined): ParsedDescription {
   const parsed: ParsedDescription = {
+    venue: null,
     doorsAt: null,
     openAt: null,
     closesAt: null,
@@ -138,11 +140,14 @@ export function parseDescription(raw: string | undefined): ParsedDescription {
 
   const rest: string[] = [];
   for (const line of toPlainText(raw).split("\n")) {
-    const match = /^\s*(開場|開演|終演|入り|料金|チケット)(?:時間|時刻)?(?:\s*[:：]\s*|\s+)(.+?)\s*$/.exec(line);
+    const match = /^\s*(会場|場所|開場|開演|終演|入り|料金|チケット)(?:時間|時刻)?(?:\s*[:：]\s*|\s+)(.+?)\s*$/.exec(line);
     const label = match?.[1];
     const value = match?.[2] ?? "";
 
-    if (label === "開場" && !parsed.doorsAt && normalizeTime(value)) {
+    // 「会場: 1,500円」は会場で払う料金のため、場所として読まない
+    if ((label === "会場" || label === "場所") && !parsed.venue && !new RegExp(YEN).test(value)) {
+      parsed.venue = value;
+    } else if (label === "開場" && !parsed.doorsAt && normalizeTime(value)) {
       parsed.doorsAt = normalizeTime(value);
     } else if (label === "開演" && !parsed.openAt && normalizeTime(value)) {
       parsed.openAt = normalizeTime(value);

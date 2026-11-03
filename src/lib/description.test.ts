@@ -40,6 +40,7 @@ describe("parseDescription", () => {
         "開場: 20:45\n開演: 21:00\n料金: 1,500円\nチケット: https://example.com/t\nグッズ販売あり",
       ),
     ).toEqual({
+      venue: null,
       doorsAt: "20:45",
       openAt: "21:00",
       closesAt: null,
@@ -56,6 +57,7 @@ describe("parseDescription", () => {
 
   it("入り時間をサイトに出さず、開演時間を読み取る", () => {
     expect(parseDescription("入り時間　17:00\n開演時間　18:00")).toEqual({
+      venue: null,
       doorsAt: null,
       openAt: "18:00",
       closesAt: null,
@@ -69,6 +71,7 @@ describe("parseDescription", () => {
     expect(
       parseDescription("漫才バトル開催！ ⏰ 開場19:40 ／開演20:00 終演21:30🎫 2,000円 (全席自由)ご予約はこちら"),
     ).toEqual({
+      venue: null,
       doorsAt: "19:40",
       openAt: "20:00",
       closesAt: "21:30",
@@ -142,8 +145,25 @@ describe("parseDescription", () => {
     ).toMatchObject({ doorsAt: "18:45", ticketUrl: "https://example.com/t" });
   });
 
+  it("会場の行を場所として読み取り、説明文から省く", () => {
+    expect(parseDescription("会場: 下北沢某劇場\n開演: 19:00\nグッズ販売あり")).toMatchObject({
+      venue: "下北沢某劇場",
+      openAt: "19:00",
+      description: "グッズ販売あり",
+    });
+    expect(parseDescription("場所　新宿某劇場").venue).toBe("新宿某劇場");
+  });
+
+  it("会場の行が金額なら料金として読む", () => {
+    expect(parseDescription("会場: 1,500円\n配信: 1,000円")).toMatchObject({
+      venue: null,
+      price: "会場1,500円 / 配信1,000円",
+    });
+  });
+
   it("読み取れない行は説明として残す", () => {
     expect(parseDescription("開場: 未定\nチケット: 当日券のみ")).toEqual({
+      venue: null,
       doorsAt: null,
       openAt: null,
       closesAt: null,
@@ -161,6 +181,7 @@ describe("parseDescription", () => {
 
   it("説明欄がなければすべて null を返す", () => {
     expect(parseDescription(undefined)).toEqual({
+      venue: null,
       doorsAt: null,
       openAt: null,
       closesAt: null,

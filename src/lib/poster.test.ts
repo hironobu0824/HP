@@ -45,9 +45,11 @@ describe("detailTexts", () => {
     );
   });
 
-  it("未入力の項目を省く", () => {
+  it("場所と料金がなければ未定にする", () => {
     expect(detailTexts(event({ venue: null, doorsAt: null, price: null }))).toEqual([
+      "場所: 未定",
       "開演: 19:00",
+      "料金: 未定",
     ]);
   });
 
@@ -70,13 +72,13 @@ describe("paginate", () => {
     expect(pages.map((page) => page.length)).toEqual([5, 2]);
   });
 
-  it("項目が少なくても 1 枚 6 件までにする", () => {
+  it("場所と料金が未定の行も高さに含めて分ける", () => {
     const pages = paginate(
       Array.from({ length: 7 }, () => event({ venue: null, price: null })),
       measure,
     );
-    expect(pages[0]).toHaveLength(6);
-    expect(pages[1]).toHaveLength(1);
+    expect(pages[0]).toHaveLength(5);
+    expect(pages[1]).toHaveLength(2);
   });
 
   it("長いライブ名で収まらなければ件数を減らす", () => {

@@ -28,8 +28,8 @@ if (!profile) throw new Error("src/content/profile/index.md がありません")
 ---
 
 <Layout>
-  <section class="mx-auto md:max-w-lg md:pt-12">
-    <div class="relative overflow-hidden md:rounded-sm">
+  <section class="mx-auto md:max-w-3xl">
+    <div class="relative overflow-hidden">
       <Image
         src={photo}
         alt="クリストファーの齊藤木曜日（左）と高橋（右）"
@@ -53,7 +53,7 @@ if (!profile) throw new Error("src/content/profile/index.md がありません")
         {
           profile.data.members.map((member) => (
             <section>
-              <h3 class="text-2xl font-bold">
+              <h3 class="text-xl font-bold">
                 {member.name}
                 <span class="ml-2 text-sm font-medium text-muted">（{member.position}）</span>
               </h3>
@@ -90,7 +90,7 @@ if (!profile) throw new Error("src/content/profile/index.md がありません")
 
     <section id="links" class="mt-16 scroll-mt-24 md:mt-24">
       <SectionHeading en="LINKS" ja="各種リンク、お問い合わせ" />
-      <ul class="mt-6 flex flex-wrap gap-3">
+      <ul class="mt-6 grid gap-x-6 gap-y-2 md:grid-cols-2">
         {
           comboLinks.map((link) => (
             <li>
@@ -104,7 +104,7 @@ if (!profile) throw new Error("src/content/profile/index.md がありません")
           memberLinks.map((member) => (
             <section>
               <h3 class="font-bold">{member.name}</h3>
-              <ul class="mt-2 flex flex-wrap gap-3">
+              <ul class="mt-2 grid gap-2">
                 {member.links.map((link) => (
                   <li>
                     <SocialLink link={link} />

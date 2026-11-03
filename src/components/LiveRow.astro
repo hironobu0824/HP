@@ -22,16 +22,10 @@ const description = event.description ? splitForPreview(event.description) : nul
   </time>
   <div class="min-w-0">
     <h3 class="text-lg font-bold md:text-xl">{event.title}</h3>
-    <dl class="mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm text-muted">
-      {
-        event.venue && (
-          <>
-            <dt>場所</dt>
-            <dd>{event.venue}</dd>
-          </>
-        )
-      }
-      <dt>時間</dt>
+    <dl class="mt-2 grid grid-cols-[auto_1fr] items-baseline gap-x-3 gap-y-1 text-sm text-muted">
+      <dt class="md:text-xs">場所</dt>
+      <dd>{event.venue || "未定"}</dd>
+      <dt class="md:text-xs">時間</dt>
       <dd>
         {[
           event.doorsAt && `開場 ${event.doorsAt}`,
@@ -41,14 +35,8 @@ const description = event.description ? splitForPreview(event.description) : nul
           .filter(Boolean)
           .join(" / ") || "時間未定"}
       </dd>
-      {
-        event.price && (
-          <>
-            <dt>料金</dt>
-            <dd>{event.price}</dd>
-          </>
-        )
-      }
+      <dt class="md:text-xs">料金</dt>
+      <dd>{event.price || "未定"}</dd>
     </dl>
     {
       description &&
