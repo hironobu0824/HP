@@ -6,6 +6,8 @@
   "observability": {
     "enabled": true
   },
+  // ダッシュボードで登録した変数を、デプロイのたびに消さない
+  "keep_vars": true,
   // id を書かなければ、初回デプロイ時に自動で作成される
   "kv_namespaces": [
     {

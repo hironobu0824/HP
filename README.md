@@ -73,7 +73,8 @@ npm test
 
 ## 🚀 デプロイ
 
-本番の接続情報を Cloudflare に登録します。
+本番の接続情報を Cloudflare に登録します。ダッシュボードで登録する場合も、Type は「Secret」にします。
+「Text」で登録した変数は `wrangler.jsonc` に書かれていないため、デプロイで消えることがあります。
 
 ```bash
 npx wrangler secret put GOOGLE_CALENDAR_API_KEY
