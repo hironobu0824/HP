@@ -59,6 +59,21 @@ describe("toLiveEvent", () => {
     expect(toLiveEvent(googleEvent({ description: "会場: 新宿某劇場" }))?.venue).toBe("下北沢");
   });
 
+  it("説明欄に料金がなければライブ名から料金を補う", () => {
+    expect(toLiveEvent(googleEvent({ summary: "下北GRIP", description: "" }))?.price).toBe("無料");
+    expect(toLiveEvent(googleEvent({ summary: "下北ＧＲＩＰ vol.3", description: "" }))?.price).toBe(
+      "無料",
+    );
+    expect(toLiveEvent(googleEvent({ summary: "Rags to Riches", description: "" }))?.price).toBe(
+      "500円",
+    );
+    expect(toLiveEvent(googleEvent({ description: "" }))?.price).toBeNull();
+  });
+
+  it("説明欄の料金をライブ名の料金より優先する", () => {
+    expect(toLiveEvent(googleEvent({ summary: "下北GRIP 特別編" }))?.price).toBe("1,500円");
+  });
+
   it("Google マップの場所は名前だけにする", () => {
     expect(
       toLiveEvent(googleEvent({ location: "下北ZAWAZAWA, 日本、〒155-0031 東京都世田谷区" }))?.venue,

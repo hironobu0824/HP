@@ -1,3 +1,4 @@
+import { knownPrices } from "../data/prices";
 import { monthRange, toTimestamp } from "./date";
 import { parseDescription } from "./description";
 
@@ -60,6 +61,16 @@ function toVenue(location: string | undefined): string | null {
   return value.split(/,\s*日本/)[0]?.trim() || value;
 }
 
+// 全角と半角、大文字と小文字の違いを無視してライブ名を比べる
+function normalizeTitle(title: string): string {
+  return title.normalize("NFKC").toLowerCase();
+}
+
+function knownPrice(title: string): string | null {
+  const normalized = normalizeTitle(title);
+  return knownPrices.find((known) => normalized.includes(normalizeTitle(known.title)))?.price ?? null;
+}
+
 // 未発表のライブを出さないよう、非公開の予定とタイトルのない予定は除外する
 export function toLiveEvent(item: GoogleEvent): LiveEvent | null {
   if (item.status === "cancelled") return null;
@@ -80,11 +91,12 @@ export function toLiveEvent(item: GoogleEvent): LiveEvent | null {
     ...parsed,
     // カレンダーの場所が空のときは、説明欄の「会場:」の行を使う
     venue: toVenue(item.location) ?? parsed.venue,
+    price: parsed.price ?? knownPrice(title),
   };
 }
 
 function cacheKey(range: ScheduleRange): string {
-  return typeof range === "string" ? `schedule:v6:${range}` : `schedule:v6:month:${range.month}`;
+  return typeof range === "string" ? `schedule:v7:${range}` : `schedule:v7:month:${range.month}`;
 }
 
 function timeWindow(range: ScheduleRange, now: Date): { timeMin: string; timeMax?: string } {
