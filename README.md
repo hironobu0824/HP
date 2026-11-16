@@ -2,8 +2,7 @@
 
 お笑い芸人クリストファーの公式ホームページです。ライブの出演情報、プロフィール、各種リンクを掲載します。
 
-> [!NOTE]
-> 現在は公開準備中です。
+🌐 公開中: https://christopher-official-site.hironobu0824.workers.dev/
 
 ## 🏗️ システム構成
 
