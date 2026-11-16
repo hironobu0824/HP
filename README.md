@@ -16,18 +16,19 @@
 | 👤 プロフィール | `src/content/` の Markdown | GitHub へ push | デプロイ後 |
 | 🔗 各種リンク | `src/data/links.ts` | GitHub へ push | デプロイ後 |
 | 🖼️ 画像 | `src/assets/` | GitHub へ push | デプロイ後 |
+| 🃏 神経衰弱の絵柄 | `src/assets/memory/` | 画像を置いて GitHub へ push | デプロイ後 |
 
 ## 📁 プロジェクト構成
 
 ```text
 src/
-├── pages/         # トップ（全セクション）、告知画像の作成
+├── pages/         # トップ（全セクション）、告知画像の作成、神経衰弱
 ├── components/    # 共通コンポーネント
 ├── layouts/       # 共通レイアウト
-├── lib/           # Google カレンダーの取得、整形、キャッシュ
+├── lib/           # Google カレンダーの取得、整形、キャッシュ、神経衰弱のカード
 ├── content/       # プロフィールの Markdown
 ├── data/          # 各種リンク
-└── assets/        # 画像
+└── assets/        # 画像（memory/ は神経衰弱の絵柄）
 ```
 
 ## 🛠️ 技術スタック

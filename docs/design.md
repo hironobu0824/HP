@@ -39,6 +39,7 @@ GitHub ──(push で自動デプロイ)──> Cloudflare Workers
 | --- | --- | --- | --- |
 | `/` | 今後と過去のライブ、プロフィール、各種リンク | カレンダー + ファイル | サーバー |
 | `/schedule/poster` | 月別の告知画像の作成（検索対象外） | カレンダー | サーバー |
+| `/memory` | 神経衰弱（絵柄が 2 枚未満の間は準備中の表示、検索対象外） | `src/assets/memory/` の画像 | 静的 |
 | `/404` | 404 画面（HTTP 404 を返す） | なし | 静的 |
 
 各種リンク（コンビの YouTube、2 人の X と Instagram、高橋の大喜利 YouTube）はトップの LINKS に置き、`src/data/links.ts` で管理する。

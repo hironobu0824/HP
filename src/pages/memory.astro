@@ -1,0 +1,251 @@
+---
+import type { ImageMetadata } from "astro";
+import { getImage } from "astro:assets";
+import Layout from "../layouts/Layout.astro";
+import { imageLabel, MIN_PAIRS } from "../lib/memory";
+
+// src/assets/memory/ に置いた画像 1 枚が 1 ペアになる。ファイル名順に読み込む
+const modules = import.meta.glob<{ default: ImageMetadata }>(
+  "../assets/memory/*.{jpg,jpeg,png,webp,avif,JPG,JPEG,PNG,WEBP,AVIF}",
+  { eager: true },
+);
+
+const images = await Promise.all(
+  Object.entries(modules)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(async ([path, module]) => {
+      const image = await getImage({ src: module.default, width: 400, height: 400, fit: "cover", format: "webp" });
+      return { src: image.src, alt: imageLabel(path) };
+    }),
+);
+
+const playable = images.length >= MIN_PAIRS;
+---
+
+<Layout title="神経衰弱" description="カードをめくって同じ絵柄をそろえる神経衰弱です。" noindex={!playable}>
+  <div class="mx-auto max-w-3xl px-4 pt-10 pb-16 md:px-8">
+    <h1 class="text-2xl font-bold">神経衰弱</h1>
+
+    {
+      playable ? (
+        <memory-game class="mt-4 block" data-images={JSON.stringify(images)}>
+          <p class="text-sm text-muted">カードを 2 枚ずつめくって、同じ絵柄をそろえてください。</p>
+          <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
+            <p class="text-sm font-semibold" role="status" data-status>
+              準備しています
+            </p>
+            <button
+              type="button"
+              data-restart
+              class="rounded-sm border border-accent px-4 py-2 text-sm font-bold text-accent hover:bg-accent hover:text-white"
+            >
+              最初から
+            </button>
+          </div>
+          <ul data-board class="memory-board mt-4 grid gap-2 sm:gap-3" />
+          <div data-clear hidden class="mt-6 rounded-sm border border-line bg-surface p-6 text-center">
+            <p class="text-xl font-bold">クリア！</p>
+            <p data-result class="mt-2 text-sm" />
+            <button type="button" data-again class="mt-4 rounded-sm bg-accent px-6 py-3 font-bold text-white">
+              もう一度遊ぶ
+            </button>
+          </div>
+        </memory-game>
+      ) : (
+        <p class="mt-6 rounded-sm border border-line bg-surface p-4 text-sm">
+          カードの画像を準備中です。
+        </p>
+      )
+    }
+  </div>
+</Layout>
+
+<style>
+  .memory-board {
+    grid-template-columns: repeat(var(--columns, 4), minmax(0, 1fr));
+  }
+
+  :global(.memory-card) {
+    perspective: 800px;
+  }
+
+  :global(.memory-card button) {
+    position: relative;
+    display: block;
+    width: 100%;
+    aspect-ratio: 1;
+    transform-style: preserve-3d;
+    cursor: pointer;
+  }
+
+  :global(.memory-card button:disabled) {
+    cursor: default;
+  }
+
+  :global(.memory-card [data-face]) {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    border-radius: 0.25rem;
+    overflow: hidden;
+  }
+
+  :global(.memory-card [data-face="front"]) {
+    transform: rotateY(180deg);
+  }
+
+  :global(.memory-card.is-open button) {
+    transform: rotateY(180deg);
+  }
+
+  :global(.memory-card.is-matched [data-face="front"]) {
+    box-shadow: 0 0 0 3px var(--color-accent);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.memory-card button) {
+      transition: transform 0.35s ease;
+    }
+  }
+</style>
+
+<script>
+  import { createDeck } from "../lib/memory";
+
+  type CardImage = { src: string; alt: string };
+
+  /** 外れたときに裏返すまでの時間（ミリ秒） */
+  const MISS_DELAY = 900;
+
+  class MemoryGame extends HTMLElement {
+    private images: CardImage[] = [];
+    private board!: HTMLElement;
+    private status!: HTMLElement;
+    private clear!: HTMLElement;
+    private result!: HTMLElement;
+    private opened: HTMLElement[] = [];
+    private matchedPairs = 0;
+    private moves = 0;
+    private locked = false;
+    private timer: ReturnType<typeof setTimeout> | undefined;
+
+    connectedCallback() {
+      const board = this.querySelector<HTMLElement>("[data-board]");
+      const status = this.querySelector<HTMLElement>("[data-status]");
+      const clear = this.querySelector<HTMLElement>("[data-clear]");
+      const result = this.querySelector<HTMLElement>("[data-result]");
+      if (!board || !status || !clear || !result) return;
+      this.board = board;
+      this.status = status;
+      this.clear = clear;
+      this.result = result;
+      this.images = JSON.parse(this.dataset.images ?? "[]") as CardImage[];
+
+      this.querySelector("[data-restart]")?.addEventListener("click", () => this.start());
+      this.querySelector("[data-again]")?.addEventListener("click", () => this.start());
+      this.start();
+    }
+
+    private start() {
+      clearTimeout(this.timer);
+      this.opened = [];
+      this.matchedPairs = 0;
+      this.moves = 0;
+      this.locked = false;
+      this.clear.hidden = true;
+
+      const deck = createDeck(this.images.length);
+      // カードがなるべく正方形に近い並びになる列数（スマートフォンでは最大 4 列）
+      const columns = Math.min(Math.ceil(Math.sqrt(deck.length)), window.innerWidth < 640 ? 4 : 6);
+      this.board.style.setProperty("--columns", String(columns));
+      this.board.replaceChildren(...deck.map((card, index) => this.createCard(card.pairId, index)));
+      this.updateStatus();
+    }
+
+    private createCard(pairId: number, index: number): HTMLElement {
+      const image = this.images[pairId];
+      const item = document.createElement("li");
+      item.className = "memory-card";
+      item.dataset.pairId = String(pairId);
+
+      const button = document.createElement("button");
+      button.type = "button";
+      button.setAttribute("aria-label", `カード ${index + 1}`);
+
+      const back = document.createElement("span");
+      back.dataset.face = "back";
+      back.className =
+        "flex items-center justify-center border-2 border-accent bg-accent text-2xl font-bold text-white/80 sm:text-4xl";
+      back.textContent = "?";
+
+      const front = document.createElement("span");
+      front.dataset.face = "front";
+      front.className = "border border-line bg-surface";
+      const img = document.createElement("img");
+      img.src = image.src;
+      img.alt = "";
+      img.width = 400;
+      img.height = 400;
+      img.decoding = "async";
+      img.className = "h-full w-full object-cover";
+      front.appendChild(img);
+
+      button.appendChild(back);
+      button.appendChild(front);
+      button.addEventListener("click", () => this.flip(item, button, image.alt));
+      item.appendChild(button);
+      return item;
+    }
+
+    private flip(item: HTMLElement, button: HTMLButtonElement, label: string) {
+      if (this.locked || item.classList.contains("is-open")) return;
+
+      item.classList.add("is-open");
+      button.disabled = true;
+      button.setAttribute("aria-label", label);
+      this.opened.push(item);
+      if (this.opened.length < 2) return;
+
+      this.moves++;
+      const [first, second] = this.opened;
+      this.opened = [];
+
+      if (first.dataset.pairId === second.dataset.pairId) {
+        first.classList.add("is-matched");
+        second.classList.add("is-matched");
+        this.matchedPairs++;
+        this.updateStatus();
+        if (this.matchedPairs === this.images.length) this.finish();
+        return;
+      }
+
+      this.updateStatus();
+      this.locked = true;
+      this.timer = setTimeout(() => {
+        for (const card of [first, second]) {
+          card.classList.remove("is-open");
+          const cardButton = card.querySelector("button");
+          if (!cardButton) continue;
+          cardButton.disabled = false;
+          const index = [...this.board.children].indexOf(card);
+          cardButton.setAttribute("aria-label", `カード ${index + 1}`);
+        }
+        this.locked = false;
+      }, MISS_DELAY);
+    }
+
+    private updateStatus() {
+      this.status.textContent = `${this.moves} 手 ・ ${this.matchedPairs} / ${this.images.length} ペア`;
+    }
+
+    private finish() {
+      this.result.textContent = `${this.moves} 手で全 ${this.images.length} ペアをそろえました。`;
+      this.clear.hidden = false;
+      this.clear.querySelector<HTMLButtonElement>("[data-again]")?.focus();
+    }
+  }
+
+  if (!customElements.get("memory-game")) {
+    customElements.define("memory-game", MemoryGame);
+  }
+</script>
